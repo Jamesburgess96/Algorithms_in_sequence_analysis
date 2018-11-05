@@ -242,18 +242,20 @@ def main():
         sys.exit("BUG! this should not happen.")
 
 
-def create_matrix(rowCount, colCount, dataList):  #declares the scoring matrix as a list of lists.
-    mat=[]
-    mat.append
+def scoring_matrix(sequences):  #declares the scoring matrix as a list of lists.
+    seq1=list(sequences[0].Sequence)
+    seq2=list(sequences[1].Sequence)
+    seq1.insert(0, '-')
+    seq2.insert(0, '-')
+    return [[0]*seq2 for i in range(seq1)]
 
 
     # Print the result to files
-    ''''''
-    if args.alignment: 
+    if args.alignment:
         print_alignment_to_file(alignment, args.alignment)
     if args.score_matrix:
         print_matrix_to_file(score_matrix, args.score_matrix)
-    ''''''
+
     # Print the result on screen
     if args.print_on_screen:
         print_matrix_on_screen(alignment)
