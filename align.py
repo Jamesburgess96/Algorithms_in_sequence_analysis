@@ -131,14 +131,22 @@ def do_global_alignment(sequences, matrix, penalty):
     #########################
     # INSERT YOUR CODE HERE #
     #########################
-    seq1=list(sequences[0].Sequence)
-    seq2=list(sequences[1].Sequence)
+    seq1 = list(sequences[0].Sequence)
+    seq2 = list(sequences[1].Sequence)
     seq1.insert(0, '-')
     seq2.insert(0, '-')
-    score_matrix=[]
-    score_matrix=[seq1, seq2]
-    print (score_matrix)
-    return score_matrix
+    print (seq1)
+    print (seq2)
+    matrix= [seq1, seq2]
+    print (matrix)
+    for row in matrix:
+        print(row)
+    t_matrix= zip(*matrix)
+    for row in t_matrix:
+        print (row)
+
+    print (scoring_matrix)
+
     #########################
     #   END YOUR CODE HERE  #
     #########################
@@ -242,18 +250,12 @@ def main():
         sys.exit("BUG! this should not happen.")
 
 
-def create_matrix(rowCount, colCount, dataList):  #declares the scoring matrix as a list of lists.
-    mat=[]
-    mat.append
-
-
-    # Print the result to files
-    ''''''
-    if args.alignment: 
+    #Print the result to files
+    if args.alignment:
         print_alignment_to_file(alignment, args.alignment)
     if args.score_matrix:
         print_matrix_to_file(score_matrix, args.score_matrix)
-    ''''''
+
     # Print the result on screen
     if args.print_on_screen:
         print_matrix_on_screen(alignment)
