@@ -131,14 +131,38 @@ def do_global_alignment(sequences, matrix, penalty):
     #########################
     # INSERT YOUR CODE HERE #
     #########################
-    seq1=list(sequences[0].Sequence)
-    seq2=list(sequences[1].Sequence)
+    seq1 = list(sequences[0].Sequence)
+    seq2 = list(sequences[1].Sequence)
+    diagonal = float('-inf')
+    horizontal = float('-inf')
+    vertical = float('-inf')
+    s_matrix = [[0 for x in range(0, len(seq2) + 1)] for y in range(0, len(seq1) + 1)] #creates a 0 filled matrix which can be filled in via scoring.
+    for y in range(0, len(seq1)+1):  #iterates through row numbers
+        for x in range(0, len(seq2)+1): #iterates through the elements of each row.
+             s_matrix[0][0] = 0 #sets the first cell of matrix as 0.
+             s_matrix[0][x] = 0 - (x * penalty) #initialises the horizontal row with gap penalties.
+             s_matrix[y][0] = 0 - (y * penalty) #initialies the vertical with gap penalties.
+             if x >= 1 and y >= 1: #Ensures that the 0 cell at the start of the matrix is not iterated over.
+                 diagonal = s_matrix[y - 1][x - 1] + matrix[ord(seq1[y - 1]) - ord('A')][ord(seq2[x - 1]) - ord('A')] #
+             if x >= 1:
+                vertical = s_matrix[y-1][x] - penalty
+             if y >= 1:
+                 horizontal = s_matrix[y][x-1] - penalty
+             maximum_score = max(diagonal, horizontal, vertical)
+             s_matrix[y][x] = maximum_score
     seq1.insert(0, '-')
     seq2.insert(0, '-')
-    score_matrix=[]
-    score_matrix=[seq1, seq2]
-    print (score_matrix)
-    return score_matrix
+    seq1.insert(0, '')#creates the complete sequence with - signs and whitespace.
+    s_matrix.insert(0, seq2)
+    new_list=[]
+    for i in range(0, len(s_matrix)):#iterates through each row number
+        new_list.append(seq1[i])#its inserting the characters but not into each list. Creating new lists at element 0 each time not inside the other lists
+        s_matrix[i].insert(0, new_list[i])
+    return "x", s_matrix
+
+
+#3 if statements check if >1 >> code on thing below in equation.
+
     #########################
     #   END YOUR CODE HERE  #
     #########################
@@ -232,28 +256,22 @@ def main():
     if args.align_global:
         alignment, score_matrix = do_global_alignment(
                 sequences, exchangeMatrix, args.gap_penalty)
-    #elif args.align_local:
+    elif args.align_local:
         alignment, score_matrix = do_local_alignment(
                 sequences, exchangeMatrix, args.gap_penalty)
-    #elif args.align_semiglobal:
+    elif args.align_semiglobal:
         alignment, score_matrix = do_semiglobal_alignment(
                 sequences, exchangeMatrix, args.gap_penalty)
     else:
         sys.exit("BUG! this should not happen.")
 
 
-def create_matrix(rowCount, colCount, dataList):  #declares the scoring matrix as a list of lists.
-    mat=[]
-    mat.append
-
-
-    # Print the result to files
-    ''''''
-    if args.alignment: 
+    #Print the result to files
+    if args.alignment:
         print_alignment_to_file(alignment, args.alignment)
     if args.score_matrix:
         print_matrix_to_file(score_matrix, args.score_matrix)
-    ''''''
+
     # Print the result on screen
     if args.print_on_screen:
         print_matrix_on_screen(alignment)
