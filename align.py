@@ -131,14 +131,105 @@ def do_global_alignment(sequences, matrix, penalty):
     #########################
     # INSERT YOUR CODE HERE #
     #########################
-    seq1=list(sequences[0].Sequence)
-    seq2=list(sequences[1].Sequence)
+    seq1 = list(sequences[0].Sequence)
+    seq2 = list(sequences[1].Sequence)
+    diagonal = float('-inf')
+    horizontal = float('-inf')
+    vertical = float('-inf')
+    t_matrix = [[0 for x in range(0, len(seq2) + 1)] for y in range(0, len(seq1) + 1)]  # creates a 0 filled matrix which can be filled in via scoring.
+    #print_matrix_on_screen(t_matrix)
+
+    s_matrix = [[0 for x in range(0, len(seq2) + 1)] for y in range(0, len(seq1) + 1)] #creates a 0 filled matrix which can be filled in via scoring.
+    for y in range(0, len(seq1)+1):  #iterates through row numbers
+        for x in range(0, len(seq2)+1): #iterates through the elements of each row.
+             s_matrix[0][0] = 0 #sets the first cell of matrix as 0.
+             s_matrix[0][x] = 0 - (x * penalty) #initialises the horizontal row with gap penalties.
+             s_matrix[y][0] = 0 - (y * penalty) #initialies the vertical with gap penalties.
+             if x >= 1 and y >= 1: #Ensures that the 0 cell at the start of the matrix is not iterated over.
+                 diagonal = s_matrix[y - 1][x - 1] + matrix[ord(seq1[y - 1]) - ord('A')][ord(seq2[x - 1]) - ord('A')] #
+             if x >= 1:
+                vertical = s_matrix[y-1][x] - penalty #iterates through
+             if y >= 1:
+                 horizontal = s_matrix[y][x-1] - penalty
+             maximum_score = max(diagonal, horizontal, vertical)
+             t_matrix[0][x] = ('<')
+             t_matrix[y][0] = ('^')
+             t_matrix[0][0] = 0
+             if x >= 1 and y >= 1:
+                if horizontal == maximum_score:
+                    t_matrix[y][x]= '<' #[y] then [x] is row then column.
+                if diagonal == maximum_score:
+                    t_matrix[y][x] = '\\'
+                if vertical == maximum_score:
+                    t_matrix[y][x] = '^'
+             s_matrix[y][x] = maximum_score
+             score = s_matrix[y][x] #value in the bottom right of matrix. Final cell.
+    print_matrix_on_screen(t_matrix)
     seq1.insert(0, '-')
     seq2.insert(0, '-')
-    score_matrix=[]
-    score_matrix=[seq1, seq2]
-    print (score_matrix)
-    return score_matrix
+    seq1.insert(0, '')#creates the complete sequence with - signs and whitespace.
+    s_matrix.insert(0, seq2)
+    new_list=[]
+    for i in range(0, len(s_matrix)):#iterates through each row number
+        new_list.append(seq1[i])#creates a new list with each element of sequence 1 in.
+        s_matrix[i].insert(0, new_list[i])
+
+
+    #####Traceback method####
+    seq1=seq1[2:]
+    seq2=seq2[2:]
+    print(seq1, seq2)
+    print(len(seq1),len(seq2),len(t_matrix),len(t_matrix[0]))
+
+    x=len(seq1)
+    y=len(seq2)
+    string1=''
+    string2=''
+
+    while(t_matrix[x][y] is not 0): #ensures the zero cell is not iterated over.
+        if(t_matrix[x][y]=='^'): #determines vertical
+            string1=string1+seq1[x-1] #adds the element from the vertical and assigns gap to horizontal position.
+            string2=string2+'-'
+            x=x-1
+        if(t_matrix[x][y]=='<'): #determines the direction is horizontal.
+            string1=string1='-'
+            string2=seq2[y-1] #adds the element from the vertical and assigns gap to horizontal position.
+            y=y-1
+        if(t_matrix[x][y]=='\\'):
+            string1=string1+seq1[x-1] #adds the characters from both sequences to the strings as it is a match.
+            string2=string2+seq2[y-1]
+            x=x-1
+            y=y-1 #decreases the value of x and y so that the while loop does not
+
+    alignment1 = (string1[::-1]) #reverses the string as the traceback was calculated from bottom to top and right to left.
+    alignment2 = (string2[::-1])
+    #print(alignment1)
+    #print(alignment2)
+    final_list=[]
+    #string3 = '-' * len(alignment1)#alignment 1 and 2 same length, so creates empty string of equal length to alignments.
+    for i,j in zip(alignment1, alignment2):
+        if i != j:
+            final_list.append(' ')
+        if i == j:
+            print(i, j)
+            final_list.append("|")
+    print("Matches:",final_list) #correct positions for matching sequences. Need to get this into a string at same position and align in middle of string1 and 2.
+    final_string = "".join(final_list) #almost working.
+    final_score = "Score = " + str(score)
+    #print(alignment1)
+    #print(final_string)
+   # print(alignment2)
+    #print(final_score)
+    alignment=[[alignment1], [final_string], [alignment2], [final_score]]
+    #print(alignment)
+
+
+
+    return alignment, s_matrix
+
+
+#3 if statements check if >1 >> code on thing below in equation.
+
     #########################
     #   END YOUR CODE HERE  #
     #########################
@@ -232,28 +323,22 @@ def main():
     if args.align_global:
         alignment, score_matrix = do_global_alignment(
                 sequences, exchangeMatrix, args.gap_penalty)
-    #elif args.align_local:
+    elif args.align_local:
         alignment, score_matrix = do_local_alignment(
                 sequences, exchangeMatrix, args.gap_penalty)
-    #elif args.align_semiglobal:
+    elif args.align_semiglobal:
         alignment, score_matrix = do_semiglobal_alignment(
                 sequences, exchangeMatrix, args.gap_penalty)
     else:
         sys.exit("BUG! this should not happen.")
 
 
-def create_matrix(rowCount, colCount, dataList):  #declares the scoring matrix as a list of lists.
-    mat=[]
-    mat.append
-
-
-    # Print the result to files
-    ''''''
-    if args.alignment: 
+    #Print the result to files
+    if args.alignment:
         print_alignment_to_file(alignment, args.alignment)
     if args.score_matrix:
         print_matrix_to_file(score_matrix, args.score_matrix)
-    ''''''
+
     # Print the result on screen
     if args.print_on_screen:
         print_matrix_on_screen(alignment)
